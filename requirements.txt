@@ -1,0 +1,9 @@
+requests
+python-dotenv
+setuptools
+motor
+beautifulsoup4
+playwright
+pyrogram
+pytz
+Flask
