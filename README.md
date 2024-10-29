@@ -27,6 +27,45 @@ A Python-based Telegram bot that integrates with cryptocurrency data from CoinGe
 - `utils/`: Utility modules such as logging and message formatting.
 
 ## Getting Started
+## Important Directory and Docker Configuration Notes
+
+To ensure the Telegram bot and the Cointelegraph news scraper work seamlessly, you have two directory organization options:
+
+1. **Telegram Bot Directory within the News Scraper Directory**: Place the entire Telegram bot project within the Cointelegraph news scraper directory.
+   
+2. **Separate Directories for Bot and Scraper**: If you prefer to keep the Telegram bot and Cointelegraph scraper as independent modules at the same directory level, ensure the following:
+   - Both directories must be at the same level in your file structure.
+   - Place the `Dockerfile` and `docker-compose.yml` files at the same level as both directories.
+   - This configuration allows you to run both modules together and ensures they communicate smoothly when deployed in Docker containers.
+
+### Example Directory Structure
+
+Here’s an example of the recommended directory structure for both setups:
+
+#### Option 1: Telegram Bot Inside News Scraper Directory
+```
+cointelegraph_news_scraper/
+├── telegram_bot/                 # Place Telegram bot files here
+├── services/
+├── utils/
+├── main.py
+├── Dockerfile                    # For the combined service
+└── docker-compose.yml            # For the combined service
+```
+
+#### Option 2: Telegram Bot and News Scraper as Independent Modules
+```
+project_root/
+├── cointelegraph_news_scraper/    # Scraper files here
+│   ├── services/
+│   ├── utils/
+│   ├── main.py
+├── telegram_bot/                  # Telegram bot files here
+├── Dockerfile                     # Shared Dockerfile
+└── docker-compose.yml             # Shared docker-compose file
+```
+
+In **Option 2**, `Dockerfile` and `docker-compose.yml` are at the `project_root` level. This configuration allows Docker to run both the scraper and bot in separate containers while ensuring connectivity between them.
 
 ### Prerequisites
 
@@ -35,6 +74,7 @@ A Python-based Telegram bot that integrates with cryptocurrency data from CoinGe
 - Telegram API ID and Hash (obtained from [my.telegram.org](https://my.telegram.org))
 - Coingecko API key
 - Docker 
+- Cointelegraph-news-scraper [Optional]
 - Mobile Number
 
 ### Installation
@@ -42,6 +82,7 @@ A Python-based Telegram bot that integrates with cryptocurrency data from CoinGe
 1. **Clone the repository:**
 
    ```bash
+   git clone https://github.com/DevDiner/cointelegraph-news-scraper.git
    git clone https://github.com/DevDiner/tg_news_bot.git
    cd tg_news_bot
    ```
