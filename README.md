@@ -72,7 +72,7 @@ In **Option 2**, `Dockerfile` and `docker-compose.yml` are at the `project_root`
 - Python 3.6 or later
 - Telegram Bot Token (obtained from [BotFather](https://core.telegram.org/bots#botfather))
 - Telegram API ID and Hash (obtained from [my.telegram.org](https://my.telegram.org))
-- Coingecko API key
+- Coingecko API key(https://www.coingecko.com/en/api)
 - Docker 
 - Cointelegraph-news-scraper [Optional]
 - Mobile Number
