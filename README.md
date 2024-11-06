@@ -624,7 +624,8 @@ pytest tests/
 
 
 
-```markdown
+---
+
 # Raspberry Pi 5 Headless Setup Guide with Docker and Reboot Instructions
 
 This guide provides comprehensive instructions on setting up and running a Raspberry Pi 5 in headless mode, including Docker installation, configuration, and steps for rebooting and running Docker Compose.
@@ -696,7 +697,7 @@ To connect via SSH, find the IP address of your Raspberry Pi:
 - **Using Fing (mobile)**: Fing scans network-connected devices.
 - **Using nmap (Linux/macOS)**: Run:
   ```bash
-  nmap -sn 192.168.1.0/24
+  nmap -sn 1xx.xxx.xxx.0/24
   ```
 
 ### 7. SSH Into Your Raspberry Pi
