@@ -621,6 +621,205 @@ If you have written tests for this project, you can run them using `pytest`:
 pytest tests/
 ```
 
+
+
+
+```markdown
+# Raspberry Pi 5 Headless Setup Guide with Docker and Reboot Instructions
+
+This guide provides comprehensive instructions on setting up and running a Raspberry Pi 5 in headless mode, including Docker installation, configuration, and steps for rebooting and running Docker Compose.
+
+## Prerequisites
+
+### Hardware Requirements
+- **Raspberry Pi 5 (8GB RAM)**.
+- **microSD Card** (32GB or larger recommended).
+- **MicroSD Card Reader** for your PC/Laptop.
+- **Stable Wi-Fi Network** for connecting the Raspberry Pi and PC/Laptop.
+- **PC/Laptop** for setup and configuration.
+- **Power Supply** for Raspberry Pi 5 (USB-C power adapter recommended).
+
+---
+
+## Steps to Set Up Raspberry Pi 5 in Headless Mode
+
+### 1. Install Raspberry Pi Imager
+- Download and install the Raspberry Pi Imager from the official website: [Raspberry Pi Imager](https://www.raspberrypi.org/software/).
+
+### 2. Manually Download Raspberry Pi OS Image
+Since you are using an 8GB RAM Raspberry Pi 5, download the **64-bit Raspberry Pi OS** (ARM64) from the [official Raspberry Pi OS download page](https://www.raspberrypi.org/software/operating-systems/).
+
+### 3. Flash Raspberry Pi OS onto microSD Card
+1. **Open the Raspberry Pi Imager**.
+2. **Select Model**: Choose **Raspberry Pi 5**.
+3. **Choose OS**: Select **"Custom Image"** to load the downloaded OS image.
+4. **Select Storage**: Choose your microSD card as the destination.
+5. Click **Write** to start flashing the OS onto the microSD card. The process includes verifying the integrity of the installation.
+
+### 4. Configure Wi-Fi and SSH for Headless Mode
+After the OS is written, remove and reinsert the microSD card into your PC/Laptop using the microSD card reader.
+
+1. **Enable SSH**:
+   - In the **boot** partition of the microSD card, create an empty file named `ssh` (no extension).
+     - On Windows, ensure the file does not have a `.txt` extension.
+     - On macOS/Linux, create the file with:
+       ```bash
+       touch /path/to/boot/ssh
+       ```
+
+2. **Set Up Wi-Fi Configuration**:
+   - In the **boot** partition, create a file named `wpa_supplicant.conf` (make sure it’s not `wpa_supplicant.conf.txt`).
+   - Open `wpa_supplicant.conf` and add the following:
+     ```bash
+     country=US  # Replace 'US' with your country's two-letter code
+     ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+     update_config=1
+
+     network={
+       ssid="YourNetworkSSID"  # Replace with Wi-Fi network name
+       psk="YourNetworkPassword"  # Replace with Wi-Fi password
+       key_mgmt=WPA2-PSK
+     }
+     ```
+   - Replace `"YourNetworkSSID"` and `"YourNetworkPassword"` with your actual Wi-Fi credentials, and update the `country` code as needed.
+
+3. **Eject the SD Card and Insert It into Your Raspberry Pi**.
+
+### 5. Power Up Your Raspberry Pi
+- Connect your Raspberry Pi to a power source using a USB-C adapter. The Pi will boot up and connect to the specified Wi-Fi network.
+
+### 6. Find Your Raspberry Pi's IP Address
+To connect via SSH, find the IP address of your Raspberry Pi:
+
+- **Router’s Admin Page**: Check connected devices.
+- **Using Angry IP Scanner**: [Download Angry IP Scanner](https://angryip.org/) to scan your network.
+- **Using Fing (mobile)**: Fing scans network-connected devices.
+- **Using nmap (Linux/macOS)**: Run:
+  ```bash
+  nmap -sn 192.168.1.0/24
+  ```
+
+### 7. SSH Into Your Raspberry Pi
+Once you have the IP address, connect to your Raspberry Pi via SSH.
+
+- **On Linux/macOS**:
+  ```bash
+  ssh pi@<your-raspberry-pi-ip>
+  ```
+  Enter the default password `raspberry` when prompted.
+
+- **On Windows (using PuTTY)**:
+  - Download [PuTTY](https://www.putty.org/) and enter your Raspberry Pi’s IP in the **Host Name** field to connect.
+
+### 8. Install Docker and Docker Compose
+To set up Docker and Docker Compose on Raspberry Pi:
+
+1. **Install Docker**:
+   ```bash
+   curl -sSL https://get.docker.com | sh
+   ```
+   Add the `pi` user to the Docker group:
+   ```bash
+   sudo usermod -aG docker pi
+   ```
+
+2. **Install Docker Compose**:
+   ```bash
+   sudo apt install -y python3-pip
+   sudo pip3 install docker-compose
+   ```
+
+3. **Verify Installation**:
+   ```bash
+   docker --version
+   docker-compose --version
+   ```
+
+### 9. Transfer Your Docker Compose Files to Raspberry Pi
+If your Docker project is hosted on GitHub, you can clone it directly:
+```bash
+git clone https://github.com/yourusername/yourproject.git
+```
+Or transfer files using SCP:
+```bash
+scp -r /path/to/your/project pi@<raspberry_pi_ip_address>:/home/pi/
+```
+
+### 10. Run Docker Compose
+Navigate to the project directory and run:
+```bash
+cd /path/to/your/project
+docker compose --profile all up -build -d
+```
+This command starts your Docker Compose services in detached mode.
+
+---
+
+## Rebooting Raspberry Pi and Restarting Docker Compose
+
+### Steps to Safely Reboot Raspberry Pi 5
+
+If you need to reboot your Raspberry Pi, follow these steps to ensure it restarts smoothly and Docker Compose comes up afterward.
+
+1. **Reboot the Raspberry Pi**:
+   In the terminal (either SSH or directly on the Pi), run:
+   ```bash
+   sudo reboot
+   ```
+   This command will reboot the Raspberry Pi safely. Wait a few moments for it to power back on and reconnect to the network.
+
+2. **Reconnect via SSH (if needed)**:
+   After rebooting, reconnect to your Raspberry Pi using SSH:
+   ```bash
+   ssh pi@<your-raspberry-pi-ip>
+   ```
+
+3. **Navigate to Docker Compose Directory**:
+   Move into the project directory where your `docker-compose.yml` is located:
+   ```bash
+   cd /path/to/your/project
+   ```
+
+4. **Restart Docker Compose**:
+   To restart your Docker containers with Docker Compose, run:
+   ```bash
+   docker compose --profile all up -d
+   ```
+
+5. **Confirm Docker Containers Are Running**:
+   Check that your containers are running correctly:
+   ```bash
+   docker ps
+   ```
+   This command lists all running containers, confirming that your services are up.
+
+---
+
+6. **Stop Docker Containers From Running**:
+   ```bash
+   docker compose --profile all down
+   ```
+   This command stopping all running containers, confirming that your services are down.
+
+---
+
+### Installing VNC Viewer (Optional)
+To access the desktop interface of your Raspberry Pi, you can install **VNC Viewer** for remote graphical control.
+
+1. **Enable VNC on Raspberry Pi**:
+   ```bash
+   sudo raspi-config
+   ```
+   Go to **Interfacing Options** > **VNC** > **Enable**.
+
+2. **Install VNC Viewer** on your PC/Laptop:
+   - [Download VNC Viewer](https://www.realvnc.com/en/connect/download/viewer/).
+
+3. **Connect via VNC**:
+   Open VNC Viewer, enter the Raspberry Pi’s IP address, and connect.
+
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
